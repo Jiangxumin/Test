@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acme Corp Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FAFAFA;
+      --sidebar-bg: #18181B;
+      --sidebar-item-hover: #27272A;
+      --sidebar-item-active: #27272A;
+      --sidebar-border: #2A2A2A;
+      --sidebar-label: #71717A;
+      --sidebar-text: #A1A1AA;
+      --sidebar-text-active: #FAFAFA;
+      --white: #FFFFFF;
+      --text-primary: #18181B;
+      --text-secondary: #71717A;
+      --text-muted: #A1A1AA;
+      --text-faint: #D4D4D8;
+      --border: #E4E4E7;
+      --input-bg: #F4F4F5;
+      --input-bg2: #E4E4E7;
+      --card-bg: #FFFFFF;
+      --accent: #DC2626;
+      --green: #22C55E;
+      --green-bg: #F0FDF4;
+      --green-text: #16A34A;
+      --yellow-bg: #FEF9C3;
+      --yellow-text: #CA8A04;
+      --red-bg: #FEF2F2;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'Sora', sans-serif;
+    }
+
+    html, body { height: 100%; font-family: var(--sans); background: var(--bg); color: var(--text-primary); font-size: 13px; }
+
+    /* ── App shell ── */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px; min-width: 240px; height: 100vh;
+      background: var(--sidebar-bg);
+      display: flex; flex-direction: column;
+      overflow-y: auto; overflow-x: hidden;
+    }
+    .sidebar::-webkit-scrollbar { width: 0; }
+
+    .logo-bar {
+      height: 56px; display: flex; align-items: center; gap: 8px;
+      padding: 0 16px; flex-shrink: 0;
+    }
+    .logo-icon {
+      width: 24px; height: 24px; background: var(--accent);
+      border-radius: 4px; flex-shrink: 0;
+    }
+    .logo-text { color: var(--sidebar-text-active); font-size: 14px; font-weight: 600; }
+
+    .sidebar-divider { height: 1px; background: var(--sidebar-border); flex-shrink: 0; }
+
+    .ws-section { padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .section-label {
+      color: var(--sidebar-label); font-family: var(--mono); font-size: 10px;
+      font-weight: 500; letter-spacing: 1px; padding: 0 2px;
+    }
+    .ws-switcher {
+      width: 216px; height: 36px; background: var(--sidebar-item-hover);
+      border-radius: 6px; display: flex; align-items: center; gap: 8px;
+      padding: 0 10px; cursor: pointer;
+    }
+    .ws-avatar {
+      width: 20px; height: 20px; background: var(--accent); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: #FAFAFA; font-size: 10px; font-weight: 600; flex-shrink: 0;
+    }
+    .ws-name-wrap { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .ws-name { color: var(--sidebar-text-active); font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ws-plan { color: var(--sidebar-label); font-family: var(--mono); font-size: 10px; }
+    .ws-chevron { color: var(--sidebar-label); flex-shrink: 0; }
+
+    .nav-section { padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      width: 216px; height: 36px; border-radius: 6px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 10px; cursor: pointer; transition: background 0.15s;
+      color: var(--sidebar-text); text-decoration: none;
+    }
+    .nav-item:hover { background: var(--sidebar-item-hover); color: var(--sidebar-text-active); }
+    .nav-item:hover svg { stroke: var(--sidebar-text-active); }
+    .nav-item.active { background: var(--sidebar-item-active); color: var(--sidebar-text-active); }
+    .nav-item.active svg { stroke: var(--sidebar-text-active); }
+    .nav-item svg { flex-shrink: 0; stroke: var(--sidebar-label); }
+    .nav-item.active svg { stroke: var(--sidebar-text-active); }
+    .nav-label-text { font-size: 13px; font-weight: 500; flex: 1; }
+    .nav-badge {
+      background: var(--accent); color: #FAFAFA; font-family: var(--mono);
+      font-size: 10px; font-weight: 600; border-radius: 4px;
+      padding: 1px 5px; min-width: 24px; text-align: center;
+    }
+
+    .sidebar-spacer { flex: 1; }
+
+    .user-profile {
+      height: 64px; display: flex; align-items: center; gap: 10px;
+      padding: 0 12px; flex-shrink: 0;
+    }
+    .user-avatar {
+      width: 32px; height: 32px; background: #3F3F46; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #FAFAFA; font-size: 11px; font-weight: 600; flex-shrink: 0;
+    }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { color: var(--sidebar-text-active); font-size: 13px; font-weight: 500; }
+    .user-email { color: var(--sidebar-label); font-family: var(--mono); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-more { color: var(--sidebar-label); cursor: pointer; }
+
+    /* ── Main content ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .top-bar {
+      height: 56px; background: var(--white); display: flex; align-items: center;
+      justify-content: space-between; padding: 0 24px; flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; }
+    .bc-home { color: var(--text-secondary); font-size: 13px; }
+    .bc-sep { color: var(--text-faint); }
+    .bc-current { color: var(--text-primary); font-size: 13px; font-weight: 500; }
+
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .search-btn {
+      width: 200px; height: 32px; background: var(--input-bg); border-radius: 6px;
+      display: flex; align-items: center; gap: 8px; padding: 0 12px; cursor: pointer;
+    }
+    .search-placeholder { color: var(--text-muted); font-size: 13px; flex: 1; }
+    .shortcut {
+      background: var(--input-bg2); border-radius: 4px; padding: 2px 5px;
+      color: var(--text-secondary); font-family: var(--mono); font-size: 11px; font-weight: 500;
+    }
+    .notif-btn {
+      width: 32px; height: 32px; border-radius: 6px; display: flex;
+      align-items: center; justify-content: center; cursor: pointer;
+    }
+    .notif-btn:hover { background: var(--input-bg); }
+
+    /* ── Page content ── */
+    .page { display: none; flex: 1; overflow-y: auto; }
+    .page.active { display: block; }
+
+    .page-inner { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Page header ── */
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; }
+    .page-title-group { display: flex; flex-direction: column; gap: 4px; }
+    .page-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; color: var(--text-primary); }
+    .page-subtitle { font-size: 13px; color: var(--text-secondary); }
+    .page-actions { display: flex; align-items: center; gap: 8px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+      cursor: pointer; border: none; font-family: var(--sans);
+    }
+    .btn-outline { background: var(--white); color: var(--text-primary); border: 1px solid var(--border); }
+    .btn-dark { background: var(--text-primary); color: var(--bg); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    /* ── Stats row ── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .stat-card {
+      background: var(--card-bg); border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .stat-card-header { display: flex; justify-content: space-between; align-items: center; }
+    .stat-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+    .stat-icon {
+      width: 32px; height: 32px; background: var(--input-bg); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stat-value { font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
+    .stat-footer { display: flex; align-items: center; gap: 4px; }
+    .stat-trend { font-family: var(--mono); font-size: 11px; font-weight: 500; }
+    .stat-trend.up { color: var(--green); }
+    .stat-trend.down { color: var(--green); } /* intentionally green: a decrease can be positive (e.g. lower bounce rate) */
+    .stat-footer-text { font-size: 11px; color: var(--text-muted); }
+
+    /* ── Charts row ── */
+    .charts-row { display: grid; grid-template-columns: 5fr 3fr; gap: 16px; }
+    .chart-card {
+      background: var(--card-bg); border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .chart-header { display: flex; justify-content: space-between; align-items: center; }
+    .chart-title { font-size: 14px; font-weight: 600; }
+
+    /* Tab pills */
+    .tab-pills {
+      display: flex; background: var(--input-bg); border-radius: 6px; padding: 4px;
+    }
+    .tab-pill {
+      padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 500;
+      cursor: pointer; color: var(--text-secondary); transition: background 0.15s;
+    }
+    .tab-pill.active { background: var(--white); color: var(--text-primary); }
+
+    /* Bar chart */
+    .bar-chart {
+      background: var(--bg); border-radius: 6px; padding: 20px 16px;
+      display: flex; align-items: flex-end; gap: 8px; height: 200px;
+    }
+    .bar {
+      flex: 1; border-radius: 4px 4px 0 0; background: var(--border);
+      transition: background 0.2s;
+    }
+    .bar.accent { background: var(--text-primary); }
+    .bar.red { background: var(--accent); }
+
+    /* Recent sales */
+    .recent-card {
+      background: var(--card-bg); border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .recent-header { display: flex; flex-direction: column; gap: 4px; }
+    .recent-title { font-size: 14px; font-weight: 600; }
+    .recent-subtitle { font-size: 12px; color: var(--text-secondary); }
+    .sale-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+    .sale-avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--input-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0;
+    }
+    .sale-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .sale-name { font-size: 13px; font-weight: 500; }
+    .sale-email { font-size: 12px; color: var(--text-secondary); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sale-amount { font-size: 13px; font-weight: 500; font-family: var(--mono); white-space: nowrap; }
+
+    /* ── Table ── */
+    .table-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; }
+    .table-head {
+      background: #F9F9F9; padding: 12px 16px; display: grid;
+      color: var(--text-secondary); font-family: var(--mono); font-size: 11px;
+      font-weight: 600; letter-spacing: 1px;
+    }
+    .table-row { padding: 14px 16px; display: grid; align-items: center; border-top: 1px solid var(--border); }
+    .table-row:nth-child(even) { background: var(--bg); }
+    .table-row:first-child { border-top: none; }
+
+    /* Member table cols */
+    .member-table .table-head,
+    .member-table .table-row { grid-template-columns: 2.5fr 1fr 1.2fr 1fr 0.5fr; }
+
+    .member-cell { display: flex; align-items: center; gap: 10px; }
+    .member-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: #FAFAFA; flex-shrink: 0;
+    }
+    .member-info { display: flex; flex-direction: column; gap: 2px; }
+    .member-name { font-size: 13px; font-weight: 500; }
+    .member-email { font-size: 11px; color: var(--text-secondary); font-family: var(--mono); }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .status-active { background: var(--green-bg); color: var(--green-text); }
+    .status-active .status-dot { background: var(--green); }
+    .status-away { background: var(--yellow-bg); color: #CA8A04; }
+    .status-away .status-dot { background: #EAB308; }
+    .status-offline { background: var(--red-bg); color: var(--accent); }
+    .status-offline .status-dot { background: var(--accent); }
+    .status-pending { background: #FFF7ED; color: #C2410C; }
+    .status-pending .status-dot { background: #F97316; }
+
+    /* File table cols */
+    .file-table .table-head,
+    .file-table .table-row { grid-template-columns: 2.8fr 0.8fr 1.1fr 1fr 0.8fr; }
+    .file-cell { display: flex; align-items: center; gap: 10px; }
+    .file-icon {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* ── Analytics page ── */
+    .analytics-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .metric-card {
+      background: var(--card-bg); border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .metric-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+    .metric-value { font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
+    .metric-footer { display: flex; align-items: center; gap: 4px; }
+
+    .traffic-card {
+      background: var(--card-bg); border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .chart-legend { display: flex; align-items: center; gap: 16px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    .analytics-bottom { display: grid; grid-template-columns: 2fr 3fr; gap: 16px; }
+
+    .sources-card {
+      background: var(--card-bg); border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .source-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+    .source-left { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .source-bar-bg { height: 6px; background: var(--input-bg); border-radius: 3px; }
+    .source-bar-fill { height: 6px; border-radius: 3px; }
+    .source-pct { font-family: var(--mono); font-size: 13px; font-weight: 500; white-space: nowrap; }
+
+    /* Top pages table */
+    .pages-table { background: var(--card-bg); border-radius: 8px; overflow: hidden; }
+    .pages-table .table-head,
+    .pages-table .table-row { grid-template-columns: 2fr 1fr 1fr 1fr; }
+
+    /* ── Integrations ── */
+    .int-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .int-card {
+      background: var(--card-bg); border-radius: 10px; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .int-card-top { display: flex; justify-content: space-between; }
+    .int-logo {
+      width: 40px; height: 40px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #FFFFFF; font-size: 15px; font-weight: 700;
+    }
+    .int-name { font-size: 15px; font-weight: 600; }
+    .int-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .int-foot { display: flex; justify-content: space-between; align-items: center; }
+    .int-foot-txt { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+    .int-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+    .int-badge-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .int-badge-connected { background: var(--green-bg); color: var(--green-text); }
+    .int-badge-connected .int-badge-dot { background: var(--green); }
+    .int-badge-pending { background: #FFF7ED; color: #C2410C; }
+    .int-badge-pending .int-badge-dot { background: #F97316; }
+
+    /* ── Settings ── */
+    .settings-layout { display: flex; height: 100%; min-height: calc(100vh - 56px); }
+    .settings-sidebar {
+      width: 220px; min-width: 220px; background: var(--white);
+      padding: 24px 16px; display: flex; flex-direction: column; gap: 2px;
+      border-right: 1px solid var(--border);
+    }
+    .settings-sidebar-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+    .settings-nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 6px; cursor: pointer;
+      color: var(--text-secondary); font-size: 13px; font-weight: 500;
+      transition: background 0.15s;
+    }
+    .settings-nav-item:hover { background: var(--input-bg); }
+    .settings-nav-item.active { background: var(--text-primary); color: var(--white); }
+    .settings-nav-item.active svg { stroke: var(--white); }
+    .settings-nav-item svg { stroke: var(--text-secondary); flex-shrink: 0; }
+    .settings-nav-item.active svg { stroke: var(--white); }
+    .settings-content { flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
+    .settings-header { font-size: 20px; font-weight: 600; }
+    .settings-card {
+      background: var(--white); border-radius: 10px; padding: 24px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .settings-card-title { font-size: 15px; font-weight: 600; }
+    .profile-avatar-row { display: flex; align-items: center; gap: 16px; }
+    .profile-avatar {
+      width: 60px; height: 60px; border-radius: 50%; background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 600; color: var(--text-secondary);
+    }
+    .profile-avatar-btns { display: flex; flex-direction: column; gap: 6px; }
+    .profile-fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .profile-field { display: flex; flex-direction: column; gap: 6px; }
+    .field-label { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+    .field-input {
+      background: var(--white); border: 1px solid var(--border); border-radius: 6px;
+      padding: 10px 12px; font-size: 13px; font-family: var(--sans); color: var(--text-primary);
+      outline: none;
+    }
+    .field-input:focus { border-color: var(--text-secondary); }
+    .save-row { display: flex; justify-content: flex-end; }
+    .toggle {
+      width: 40px; height: 22px; border-radius: 11px; padding: 0 3px;
+      display: flex; align-items: center; cursor: pointer; transition: background 0.2s;
+    }
+    .toggle.on { background: var(--text-primary); justify-content: flex-end; }
+    .toggle.off { background: var(--border); justify-content: flex-start; }
+    .toggle-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--white); }
+    .notif-row { display: flex; justify-content: space-between; align-items: center; }
+    .notif-label-group { display: flex; flex-direction: column; gap: 2px; }
+    .notif-label { font-size: 13px; font-weight: 500; }
+    .notif-sub { font-size: 12px; color: var(--text-secondary); }
+    .danger-row { display: flex; justify-content: space-between; align-items: center; }
+    .danger-txt-group { display: flex; flex-direction: column; gap: 4px; }
+    .danger-title-txt { font-size: 13px; font-weight: 500; }
+    .danger-sub { font-size: 12px; color: var(--text-secondary); }
+
+    /* ── Help ── */
+    .help-inner { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
+    .help-search {
+      background: var(--white); border-radius: 10px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px; cursor: text;
+    }
+    .help-search-txt { font-size: 14px; color: var(--text-muted); }
+    .help-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .help-cat {
+      background: var(--white); border-radius: 10px; padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .help-cat-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .help-cat-title { font-size: 14px; font-weight: 600; }
+    .help-cat-count { font-size: 12px; color: var(--text-secondary); }
+    .help-bottom { display: grid; grid-template-columns: 1fr auto; gap: 16px; }
+    .article-card {
+      background: var(--white); border-radius: 10px; padding: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .article-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .article-row:last-child { border-bottom: none; }
+    .article-left { display: flex; align-items: center; gap: 10px; }
+    .ticket-card { width: 360px; background: var(--white); border-radius: 10px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .ticket-item {
+      background: var(--bg); border-radius: 8px; padding: 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .ticket-row { display: flex; justify-content: space-between; align-items: center; }
+    .ticket-subject { font-size: 13px; font-weight: 500; }
+    .ticket-date { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); }
+    .ticket-badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+    .ticket-open { background: var(--yellow-bg); color: #A16207; }
+    .ticket-resolved { background: var(--green-bg); color: var(--green-text); }
+
+    /* Utility */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .gap-4 { gap: 4px; }
+    .gap-8 { gap: 8px; }
+    .gap-16 { gap: 16px; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .text-muted { color: var(--text-muted); }
+    .text-secondary { color: var(--text-secondary); }
+    .mono { font-family: var(--mono); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <!-- Logo -->
+    <div class="logo-bar">
+      <div class="logo-icon"></div>
+      <span class="logo-text">Acme Corp</span>
+    </div>
+    <div class="sidebar-divider"></div>
+
+    <!-- Workspace -->
+    <div class="ws-section">
+      <span class="section-label">WORKSPACE</span>
+      <div class="ws-switcher">
+        <div class="ws-avatar">A</div>
+        <div class="ws-name-wrap">
+          <span class="ws-name">Acme Production</span>
+          <span class="ws-plan">Pro Plan</span>
+        </div>
+        <i data-lucide="chevrons-up-down" class="ws-chevron" width="14" height="14"></i>
+      </div>
+    </div>
+    <div class="sidebar-divider"></div>
+
+    <!-- Main nav -->
+    <nav class="nav-section">
+      <span class="section-label">MAIN MENU</span>
+      <a class="nav-item active" data-page="dashboard" href="#dashboard">
+        <i data-lucide="layout-dashboard" width="16" height="16"></i>
+        <span class="nav-label-text">Dashboard</span>
+      </a>
+      <a class="nav-item" data-page="analytics" href="#analytics">
+        <i data-lucide="trending-up" width="16" height="16"></i>
+        <span class="nav-label-text">Analytics</span>
+        <span class="nav-badge">3</span>
+      </a>
+      <a class="nav-item" data-page="team" href="#team">
+        <i data-lucide="users" width="16" height="16"></i>
+        <span class="nav-label-text">Team</span>
+      </a>
+      <a class="nav-item" data-page="documents" href="#documents">
+        <i data-lucide="file-text" width="16" height="16"></i>
+        <span class="nav-label-text">Documents</span>
+      </a>
+      <a class="nav-item" data-page="integrations" href="#integrations">
+        <i data-lucide="zap" width="16" height="16"></i>
+        <span class="nav-label-text">Integrations</span>
+      </a>
+    </nav>
+    <div class="sidebar-divider"></div>
+
+    <!-- Settings nav -->
+    <nav class="nav-section">
+      <span class="section-label">SETTINGS</span>
+      <a class="nav-item" data-page="settings" href="#settings">
+        <i data-lucide="settings" width="16" height="16"></i>
+        <span class="nav-label-text">Settings</span>
+      </a>
+      <a class="nav-item" data-page="help" href="#help">
+        <i data-lucide="life-buoy" width="16" height="16"></i>
+        <span class="nav-label-text">Help &amp; Support</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-divider"></div>
+
+    <!-- User profile -->
+    <div class="user-profile">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">Jane Doe</div>
+        <div class="user-email">jane@acme.com</div>
+      </div>
+      <i data-lucide="ellipsis" class="user-more" width="16" height="16"></i>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+    <!-- Top bar -->
+    <header class="top-bar">
+      <div class="breadcrumb">
+        <span class="bc-home">Acme Corp</span>
+        <i data-lucide="chevron-right" class="bc-sep" width="14" height="14"></i>
+        <span class="bc-current" id="bc-current">Dashboard</span>
+      </div>
+      <div class="top-actions">
+        <div class="search-btn">
+          <i data-lucide="search" width="14" height="14" style="color:var(--text-secondary)"></i>
+          <span class="search-placeholder">Search...</span>
+          <span class="shortcut">⌘K</span>
+        </div>
+        <div class="notif-btn">
+          <i data-lucide="bell" width="16" height="16" style="color:var(--text-secondary)"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════ DASHBOARD ═══════════════════════ -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-inner">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Welcome back, Jane. Here's what's happening today.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline">
+              <i data-lucide="download" width="14" height="14"></i>Export
+            </button>
+            <button class="btn btn-dark">
+              <i data-lucide="plus" width="14" height="14"></i>New Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Total Revenue</span>
+              <div class="stat-icon"><i data-lucide="dollar-sign" width="16" height="16" style="color:var(--text-secondary)"></i></div>
+            </div>
+            <div class="stat-value">$45,231.89</div>
+            <div class="stat-footer">
+              <i data-lucide="arrow-up" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend up">+20.1%</span>
+              <span class="stat-footer-text">from last month</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Subscriptions</span>
+              <div class="stat-icon"><i data-lucide="users" width="16" height="16" style="color:var(--text-secondary)"></i></div>
+            </div>
+            <div class="stat-value">+2,350</div>
+            <div class="stat-footer">
+              <i data-lucide="arrow-up" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend up">+180.1%</span>
+              <span class="stat-footer-text">from last month</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Sales</span>
+              <div class="stat-icon"><i data-lucide="credit-card" width="16" height="16" style="color:var(--text-secondary)"></i></div>
+            </div>
+            <div class="stat-value">+12,234</div>
+            <div class="stat-footer">
+              <i data-lucide="arrow-up" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend up">+19%</span>
+              <span class="stat-footer-text">from last month</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Active Now</span>
+              <div class="stat-icon"><i data-lucide="activity" width="16" height="16" style="color:var(--text-secondary)"></i></div>
+            </div>
+            <div class="stat-value">+573</div>
+            <div class="stat-footer">
+              <i data-lucide="arrow-up" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend up">+201</span>
+              <span class="stat-footer-text">since last hour</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="charts-row">
+          <!-- Overview chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title">Overview</span>
+              <div class="tab-pills">
+                <span class="tab-pill active">Overview</span>
+                <span class="tab-pill">Analytics</span>
+                <span class="tab-pill">Reports</span>
+              </div>
+            </div>
+            <div class="bar-chart">
+              <div class="bar" style="height:60px" title="Jan"></div>
+              <div class="bar" style="height:95px" title="Feb"></div>
+              <div class="bar" style="height:130px" title="Mar"></div>
+              <div class="bar" style="height:80px" title="Apr"></div>
+              <div class="bar accent" style="height:155px" title="May"></div>
+              <div class="bar" style="height:110px" title="Jun"></div>
+              <div class="bar" style="height:145px" title="Jul"></div>
+              <div class="bar" style="height:90px" title="Aug"></div>
+              <div class="bar" style="height:120px" title="Sep"></div>
+            </div>
+          </div>
+
+          <!-- Recent sales -->
+          <div class="recent-card">
+            <div class="recent-header">
+              <span class="recent-title">Recent Sales</span>
+              <span class="recent-subtitle">You made 265 sales this month.</span>
+            </div>
+            <div class="sale-row">
+              <div class="sale-avatar">ON</div>
+              <div class="sale-info">
+                <span class="sale-name">Olivia Martin</span>
+                <span class="sale-email">olivia.martin@email.com</span>
+              </div>
+              <span class="sale-amount">+$1,999.00</span>
+            </div>
+            <div class="sale-row">
+              <div class="sale-avatar">JL</div>
+              <div class="sale-info">
+                <span class="sale-name">Jackson Lee</span>
+                <span class="sale-email">jackson.lee@email.com</span>
+              </div>
+              <span class="sale-amount">+$39.00</span>
+            </div>
+            <div class="sale-row">
+              <div class="sale-avatar">IN</div>
+              <div class="sale-info">
+                <span class="sale-name">Isabella Nguyen</span>
+                <span class="sale-email">isabella.nguyen@email.com</span>
+              </div>
+              <span class="sale-amount">+$299.00</span>
+            </div>
+            <div class="sale-row">
+              <div class="sale-avatar">WK</div>
+              <div class="sale-info">
+                <span class="sale-name">William Kim</span>
+                <span class="sale-email">will@email.com</span>
+              </div>
+              <span class="sale-amount">+$99.00</span>
+            </div>
+            <div class="sale-row">
+              <div class="sale-avatar">SD</div>
+              <div class="sale-info">
+                <span class="sale-name">Sofia Davis</span>
+                <span class="sale-email">sofia.davis@email.com</span>
+              </div>
+              <span class="sale-amount">+$39.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ ANALYTICS ═══════════════════════ -->
+    <section class="page" id="page-analytics">
+      <div class="page-inner">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Analytics</h1>
+            <p class="page-subtitle">Track your site performance and user behavior.</p>
+          </div>
+          <div class="tab-pills">
+            <span class="tab-pill active">7d</span>
+            <span class="tab-pill">30d</span>
+            <span class="tab-pill">90d</span>
+            <span class="tab-pill">Custom</span>
+          </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="analytics-metrics">
+          <div class="metric-card">
+            <span class="metric-label">Total Sessions</span>
+            <span class="metric-value">1,284,037</span>
+            <div class="metric-footer">
+              <i data-lucide="arrow-up" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend up">+12.3%</span>
+              <span class="stat-footer-text">vs last period</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Bounce Rate</span>
+            <span class="metric-value">38.4%</span>
+            <div class="metric-footer">
+              <i data-lucide="arrow-down" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend down">-5.1%</span>
+              <span class="stat-footer-text">vs last period</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Avg. Session Time</span>
+            <span class="metric-value">3m 42s</span>
+            <div class="metric-footer">
+              <i data-lucide="arrow-up" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend up">+8.2%</span>
+              <span class="stat-footer-text">vs last period</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Conversions</span>
+            <span class="metric-value">24,781</span>
+            <div class="metric-footer">
+              <i data-lucide="arrow-up" width="12" height="12" style="color:var(--green)"></i>
+              <span class="stat-trend up">+4.6%</span>
+              <span class="stat-footer-text">vs last period</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Traffic chart -->
+        <div class="traffic-card">
+          <div class="chart-header">
+            <span class="chart-title">Traffic Over Time</span>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background:var(--text-primary)"></span>Sessions
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:var(--accent)"></span>Pageviews
+              </div>
+            </div>
+          </div>
+          <div class="bar-chart" style="height:200px">
+            <div class="bar" style="height:70px"></div>
+            <div class="bar" style="height:110px"></div>
+            <div class="bar" style="height:90px"></div>
+            <div class="bar accent" style="height:150px"></div>
+            <div class="bar" style="height:120px"></div>
+            <div class="bar" style="height:80px"></div>
+            <div class="bar red" style="height:160px"></div>
+            <div class="bar" style="height:130px"></div>
+          </div>
+        </div>
+
+        <!-- Bottom row -->
+        <div class="analytics-bottom">
+          <!-- Traffic sources -->
+          <div class="sources-card">
+            <span class="chart-title">Traffic Sources</span>
+            <div class="source-row">
+              <div class="source-left">
+                <span style="font-size:13px;font-weight:500">Organic Search</span>
+                <div class="source-bar-bg">
+                  <div class="source-bar-fill" style="width:60%;background:var(--text-primary)"></div>
+                </div>
+              </div>
+              <span class="source-pct">60%</span>
+            </div>
+            <div class="source-row">
+              <div class="source-left">
+                <span style="font-size:13px;font-weight:500">Direct</span>
+                <div class="source-bar-bg">
+                  <div class="source-bar-fill" style="width:30%;background:var(--accent)"></div>
+                </div>
+              </div>
+              <span class="source-pct">30%</span>
+            </div>
+            <div class="source-row">
+              <div class="source-left">
+                <span style="font-size:13px;font-weight:500">Social Media</span>
+                <div class="source-bar-bg">
+                  <div class="source-bar-fill" style="width:10%;background:var(--text-secondary)"></div>
+                </div>
+              </div>
+              <span class="source-pct">10%</span>
+            </div>
+          </div>
+
+          <!-- Top pages -->
+          <div class="pages-table table-card">
+            <div class="table-head pages-table">
+              <span>PAGE</span><span>VIEWS</span><span>BOUNCE</span><span>AVG TIME</span>
+            </div>
+            <div class="table-row pages-table">
+              <span class="mono" style="font-weight:500">/dashboard</span>
+              <span class="mono">24,312</span>
+              <span class="mono" style="color:var(--green)">22.1%</span>
+              <span class="mono">4m 12s</span>
+            </div>
+            <div class="table-row pages-table" style="background:var(--bg)">
+              <span class="mono" style="font-weight:500">/pricing</span>
+              <span class="mono">18,924</span>
+              <span class="mono" style="color:var(--text-secondary)">35.6%</span>
+              <span class="mono">2m 48s</span>
+            </div>
+            <div class="table-row pages-table">
+              <span class="mono" style="font-weight:500">/blog/intro</span>
+              <span class="mono">12,087</span>
+              <span class="mono" style="color:var(--accent)">41.2%</span>
+              <span class="mono">1m 54s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ TEAM ═══════════════════════ -->
+    <section class="page" id="page-team">
+      <div class="page-inner">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Team</h1>
+            <p class="page-subtitle">Manage your team members and their roles.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline">
+              <i data-lucide="search" width="14" height="14"></i>Search members...
+            </button>
+            <button class="btn btn-dark">
+              <i data-lucide="user-plus" width="14" height="14"></i>Invite Member
+            </button>
+          </div>
+        </div>
+
+        <!-- Team stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <span class="stat-label">Total Members</span>
+            <div class="stat-value">84</div>
+            <span class="stat-footer-text">across 6 departments</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active</span>
+            <div class="stat-value">76</div>
+            <span style="color:var(--green);font-size:11px">90.5% of team</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Pending</span>
+            <div class="stat-value">8</div>
+            <span class="stat-footer-text">invitations pending</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Departments</span>
+            <div class="stat-value">6</div>
+            <span class="stat-footer-text">Eng · Design · Marketing</span>
+          </div>
+        </div>
+
+        <!-- Member table -->
+        <div class="table-card member-table">
+          <div class="table-head member-table">
+            <span>MEMBER</span><span>ROLE</span><span>DEPARTMENT</span><span>STATUS</span><span>ACTIONS</span>
+          </div>
+          <div class="table-row member-table">
+            <div class="member-cell">
+              <div class="member-avatar" style="background:#3B82F6">JD</div>
+              <div class="member-info">
+                <span class="member-name">Jane Doe</span>
+                <span class="member-email">jane@acme.com</span>
+              </div>
+            </div>
+            <span>Admin</span>
+            <span style="color:var(--text-secondary)">Engineering</span>
+            <span class="status-badge status-active"><span class="status-dot"></span>Active</span>
+            <i data-lucide="ellipsis" width="16" height="16" style="color:var(--text-secondary);cursor:pointer"></i>
+          </div>
+          <div class="table-row member-table" style="background:var(--bg)">
+            <div class="member-cell">
+              <div class="member-avatar" style="background:#22C55E">MT</div>
+              <div class="member-info">
+                <span class="member-name">Marcus Thompson</span>
+                <span class="member-email">marcus@acme.com</span>
+              </div>
+            </div>
+            <span>Developer</span>
+            <span style="color:var(--text-secondary)">Engineering</span>
+            <span class="status-badge status-active"><span class="status-dot"></span>Active</span>
+            <i data-lucide="ellipsis" width="16" height="16" style="color:var(--text-secondary);cursor:pointer"></i>
+          </div>
+          <div class="table-row member-table">
+            <div class="member-cell">
+              <div class="member-avatar" style="background:var(--accent)">SR</div>
+              <div class="member-info">
+                <span class="member-name">Sara Rodriguez</span>
+                <span class="member-email">sara@acme.com</span>
+              </div>
+            </div>
+            <span>Designer</span>
+            <span style="color:var(--text-secondary)">Design</span>
+            <span class="status-badge status-away"><span class="status-dot"></span>Away</span>
+            <i data-lucide="ellipsis" width="16" height="16" style="color:var(--text-secondary);cursor:pointer"></i>
+          </div>
+          <div class="table-row member-table" style="background:var(--bg)">
+            <div class="member-cell">
+              <div class="member-avatar" style="background:#71717A">AK</div>
+              <div class="member-info">
+                <span class="member-name">Aisha Kumar</span>
+                <span class="member-email">aisha@acme.com</span>
+              </div>
+            </div>
+            <span>Marketing Lead</span>
+            <span style="color:var(--text-secondary)">Marketing</span>
+            <span class="status-badge status-offline"><span class="status-dot"></span>Offline</span>
+            <i data-lucide="ellipsis" width="16" height="16" style="color:var(--text-secondary);cursor:pointer"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ DOCUMENTS ═══════════════════════ -->
+    <section class="page" id="page-documents">
+      <div class="page-inner">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Documents</h1>
+            <p class="page-subtitle">All your files and shared documents in one place.</p>
+          </div>
+          <div class="page-actions">
+            <div class="tab-pills">
+              <span class="tab-pill active" style="display:flex;align-items:center;gap:6px"><i data-lucide="layout-grid" width="14" height="14"></i></span>
+              <span class="tab-pill" style="display:flex;align-items:center;gap:6px"><i data-lucide="list" width="14" height="14"></i></span>
+            </div>
+            <button class="btn btn-dark">
+              <i data-lucide="upload" width="14" height="14"></i>Upload File
+            </button>
+          </div>
+        </div>
+
+        <!-- Docs stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <span class="stat-label">Total Files</span>
+            <div class="stat-value">1,247</div>
+            <span class="stat-footer-text">across all folders</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Shared</span>
+            <div class="stat-value">234</div>
+            <span class="stat-footer-text">with team members</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Storage Used</span>
+            <div class="stat-value">42.3 GB</div>
+            <span class="stat-footer-text">of 100 GB quota</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Last Modified</span>
+            <div class="stat-value">2h ago</div>
+            <span class="stat-footer-text">Q1 Report 2026.pdf</span>
+          </div>
+        </div>
+
+        <!-- File table -->
+        <div class="table-card file-table">
+          <div class="table-head file-table">
+            <span>FILE NAME</span><span>SIZE</span><span>MODIFIED</span><span>OWNER</span><span>STATUS</span>
+          </div>
+          <div class="table-row file-table">
+            <div class="file-cell">
+              <div class="file-icon" style="background:#FEF2F2">
+                <i data-lucide="file-text" width="14" height="14" style="color:var(--accent)"></i>
+              </div>
+              <span style="font-weight:500">Q1 Report 2026.pdf</span>
+            </div>
+            <span class="mono" style="color:var(--text-secondary)">2.4 MB</span>
+            <span class="mono" style="color:var(--text-secondary)">Mar 4, 2026</span>
+            <span>Jane Doe</span>
+            <span class="status-badge status-active"><span class="status-dot"></span>Shared</span>
+          </div>
+          <div class="table-row file-table" style="background:var(--bg)">
+            <div class="file-cell">
+              <div class="file-icon" style="background:#EFF6FF">
+                <i data-lucide="file-spreadsheet" width="14" height="14" style="color:#3B82F6"></i>
+              </div>
+              <span style="font-weight:500">Budget Tracker 2026.xlsx</span>
+            </div>
+            <span class="mono" style="color:var(--text-secondary)">1.1 MB</span>
+            <span class="mono" style="color:var(--text-secondary)">Mar 2, 2026</span>
+            <span>Marcus Thompson</span>
+            <span class="status-badge status-active"><span class="status-dot"></span>Shared</span>
+          </div>
+          <div class="table-row file-table">
+            <div class="file-cell">
+              <div class="file-icon" style="background:#F3F4F6">
+                <i data-lucide="image" width="14" height="14" style="color:var(--text-secondary)"></i>
+              </div>
+              <span style="font-weight:500">Brand Assets.zip</span>
+            </div>
+            <span class="mono" style="color:var(--text-secondary)">94.2 MB</span>
+            <span class="mono" style="color:var(--text-secondary)">Feb 28, 2026</span>
+            <span>Sara Rodriguez</span>
+            <span class="status-badge" style="background:var(--input-bg);color:var(--text-secondary)">
+              <span class="status-dot" style="background:var(--text-secondary)"></span>Private
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ INTEGRATIONS ═══════════════════════ -->
+    <section class="page" id="page-integrations">
+      <div class="page-inner">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Integrations</h1>
+            <p class="page-subtitle">Connect your favorite tools and services</p>
+          </div>
+          <button class="btn btn-dark" style="padding:9px 16px;font-size:13px;font-weight:600;border-radius:8px">
+            <i data-lucide="store" width="15" height="15"></i>Browse Marketplace
+          </button>
+        </div>
+
+        <!-- Int stats -->
+        <div class="stats-row">
+          <div class="stat-card" style="gap:4px">
+            <span class="stat-label">Active Integrations</span>
+            <span style="font-size:28px;font-weight:700;font-family:var(--mono)">7</span>
+          </div>
+          <div class="stat-card" style="gap:4px">
+            <span class="stat-label">Pending Auth</span>
+            <span style="font-size:28px;font-weight:700;font-family:var(--mono)">2</span>
+          </div>
+          <div class="stat-card" style="gap:4px">
+            <span class="stat-label">API Calls (30d)</span>
+            <span style="font-size:28px;font-weight:700;font-family:var(--mono)">2.4M</span>
+          </div>
+          <div class="stat-card" style="gap:4px">
+            <span class="stat-label">Last Sync</span>
+            <span style="font-size:28px;font-weight:700;font-family:var(--mono)">4m ago</span>
+          </div>
+        </div>
+
+        <span style="font-size:14px;font-weight:600">Connected Apps</span>
+
+        <!-- Integration grid -->
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-top">
+              <div class="int-logo" style="background:#635BFF;font-size:18px">S</div>
+              <span class="int-badge int-badge-connected">
+                <span class="int-badge-dot"></span>Connected
+              </span>
+            </div>
+            <span class="int-name">Stripe</span>
+            <span class="int-desc">Payment processing and subscription management for your SaaS.</span>
+            <div class="int-foot">
+              <span class="int-foot-txt">Last sync: 4m ago</span>
+              <button class="btn btn-outline btn-sm">Configure</button>
+            </div>
+          </div>
+          <div class="int-card">
+            <div class="int-card-top">
+              <div class="int-logo" style="background:#4A154B">Sl</div>
+              <span class="int-badge int-badge-connected">
+                <span class="int-badge-dot"></span>Connected
+              </span>
+            </div>
+            <span class="int-name">Slack</span>
+            <span class="int-desc">Team messaging and notifications sent directly to your channels.</span>
+            <div class="int-foot">
+              <span class="int-foot-txt">Last sync: 12m ago</span>
+              <button class="btn btn-outline btn-sm">Configure</button>
+            </div>
+          </div>
+          <div class="int-card">
+            <div class="int-card-top">
+              <div class="int-logo" style="background:#24292F">Gh</div>
+              <span class="int-badge int-badge-connected">
+                <span class="int-badge-dot"></span>Connected
+              </span>
+            </div>
+            <span class="int-name">GitHub</span>
+            <span class="int-desc">Sync repositories, issues, and pull requests with your workspace.</span>
+            <div class="int-foot">
+              <span class="int-foot-txt">Last sync: 1h ago</span>
+              <button class="btn btn-outline btn-sm">Configure</button>
+            </div>
+          </div>
+          <div class="int-card">
+            <div class="int-card-top">
+              <div class="int-logo" style="background:#E37400;font-size:14px">GA</div>
+              <span class="int-badge int-badge-pending">
+                <span class="int-badge-dot"></span>Pending
+              </span>
+            </div>
+            <span class="int-name">Google Analytics</span>
+            <span class="int-desc">Track website traffic, conversions, and user behavior in real-time.</span>
+            <div class="int-foot">
+              <span class="int-foot-txt">Auth required</span>
+              <button class="btn btn-dark btn-sm">Connect</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ SETTINGS ═══════════════════════ -->
+    <section class="page" id="page-settings" style="overflow:hidden">
+      <div class="settings-layout">
+        <div class="settings-sidebar">
+          <span class="settings-sidebar-title">Settings</span>
+          <div class="settings-nav-item active">
+            <i data-lucide="user" width="14" height="14"></i>General
+          </div>
+          <div class="settings-nav-item">
+            <i data-lucide="lock" width="14" height="14"></i>Security
+          </div>
+          <div class="settings-nav-item">
+            <i data-lucide="bell" width="14" height="14"></i>Notifications
+          </div>
+          <div class="settings-nav-item">
+            <i data-lucide="credit-card" width="14" height="14"></i>Billing
+          </div>
+          <div class="settings-nav-item">
+            <i data-lucide="terminal" width="14" height="14"></i>API
+          </div>
+        </div>
+        <div class="settings-content">
+          <span class="settings-header">General Settings</span>
+
+          <!-- Profile card -->
+          <div class="settings-card">
+            <span class="settings-card-title">Profile</span>
+            <div class="profile-avatar-row">
+              <div class="profile-avatar">JD</div>
+              <div class="profile-avatar-btns">
+                <button class="btn btn-dark" style="padding:7px 14px;font-size:12px">Upload photo</button>
+                <span style="font-size:12px;color:var(--text-secondary);cursor:pointer">Remove photo</span>
+              </div>
+            </div>
+            <div class="profile-fields-row">
+              <div class="profile-field">
+                <label class="field-label">Full Name</label>
+                <input class="field-input" type="text" value="Jane Doe" />
+              </div>
+              <div class="profile-field">
+                <label class="field-label">Email Address</label>
+                <input class="field-input" type="email" value="jane@acme.com" />
+              </div>
+            </div>
+            <div class="save-row">
+              <button class="btn btn-dark" style="padding:9px 20px;font-size:13px;font-weight:600">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- Notifications card -->
+          <div class="settings-card">
+            <span class="settings-card-title">Notifications</span>
+            <div class="notif-row">
+              <div class="notif-label-group">
+                <span class="notif-label">Email Notifications</span>
+                <span class="notif-sub">Receive email updates about activity</span>
+              </div>
+              <div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')">
+                <div class="toggle-dot"></div>
+              </div>
+            </div>
+            <div class="notif-row">
+              <div class="notif-label-group">
+                <span class="notif-label">Push Notifications</span>
+                <span class="notif-sub">Receive push notifications on desktop</span>
+              </div>
+              <div class="toggle off" onclick="this.classList.toggle('on');this.classList.toggle('off')">
+                <div class="toggle-dot"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danger zone -->
+          <div class="settings-card">
+            <span class="settings-card-title" style="color:var(--accent)">Danger Zone</span>
+            <div class="danger-row">
+              <div class="danger-txt-group">
+                <span class="danger-title-txt">Delete Account</span>
+                <span class="danger-sub">Permanently delete your account and all data</span>
+              </div>
+              <button class="btn" style="background:var(--red-bg);color:var(--accent);padding:8px 16px;font-size:12px;font-weight:600">
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ HELP ═══════════════════════ -->
+    <section class="page" id="page-help">
+      <div class="help-inner">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Help &amp; Support</h1>
+            <p class="page-subtitle">Browse our documentation or contact our support team</p>
+          </div>
+          <button class="btn btn-dark" style="padding:9px 16px;font-size:13px;font-weight:600;border-radius:8px">
+            <i data-lucide="message-circle" width="15" height="15"></i>Contact Support
+          </button>
+        </div>
+
+        <!-- Search -->
+        <div class="help-search">
+          <i data-lucide="search" width="16" height="16" style="color:var(--text-muted)"></i>
+          <span class="help-search-txt">Search for articles, guides, tutorials...</span>
+        </div>
+
+        <span style="font-size:14px;font-weight:600">Browse by Category</span>
+
+        <!-- Categories -->
+        <div class="help-cats">
+          <div class="help-cat">
+            <div class="help-cat-icon" style="background:#EFF6FF">
+              <i data-lucide="rocket" width="18" height="18" style="color:#3B82F6"></i>
+            </div>
+            <span class="help-cat-title">Getting Started</span>
+            <span class="help-cat-count">12 articles</span>
+          </div>
+          <div class="help-cat">
+            <div class="help-cat-icon" style="background:#FEF9C3">
+              <i data-lucide="code" width="18" height="18" style="color:#CA8A04"></i>
+            </div>
+            <span class="help-cat-title">API Documentation</span>
+            <span class="help-cat-count">28 articles</span>
+          </div>
+          <div class="help-cat">
+            <div class="help-cat-icon" style="background:#F0FDF4">
+              <i data-lucide="credit-card" width="18" height="18" style="color:#16A34A"></i>
+            </div>
+            <span class="help-cat-title">Billing &amp; Plans</span>
+            <span class="help-cat-count">8 articles</span>
+          </div>
+          <div class="help-cat">
+            <div class="help-cat-icon" style="background:#FEF2F2">
+              <i data-lucide="users" width="18" height="18" style="color:var(--accent)"></i>
+            </div>
+            <span class="help-cat-title">Community</span>
+            <span class="help-cat-count">43 articles</span>
+          </div>
+        </div>
+
+        <!-- Bottom row -->
+        <div class="help-bottom">
+          <!-- Articles -->
+          <div class="article-card">
+            <span style="font-size:14px;font-weight:600">Popular Articles</span>
+            <div class="article-row">
+              <div class="article-left">
+                <i data-lucide="file-text" width="14" height="14" style="color:var(--text-secondary)"></i>
+                <span>How to set up your first workspace</span>
+              </div>
+              <i data-lucide="chevron-right" width="14" height="14" style="color:var(--text-muted)"></i>
+            </div>
+            <div class="article-row" style="background:var(--bg)">
+              <div class="article-left">
+                <i data-lucide="file-text" width="14" height="14" style="color:var(--text-secondary)"></i>
+                <span>Connecting integrations via OAuth</span>
+              </div>
+              <i data-lucide="chevron-right" width="14" height="14" style="color:var(--text-muted)"></i>
+            </div>
+            <div class="article-row">
+              <div class="article-left">
+                <i data-lucide="file-text" width="14" height="14" style="color:var(--text-secondary)"></i>
+                <span>Understanding your analytics dashboard</span>
+              </div>
+              <i data-lucide="chevron-right" width="14" height="14" style="color:var(--text-muted)"></i>
+            </div>
+          </div>
+
+          <!-- Tickets -->
+          <div class="ticket-card">
+            <span style="font-size:14px;font-weight:600">My Tickets</span>
+            <div class="ticket-item">
+              <div class="ticket-row">
+                <span class="ticket-subject">Billing invoice discrepancy</span>
+                <span class="ticket-badge ticket-open">Open</span>
+              </div>
+              <span class="ticket-date">Opened 2 days ago · Ticket #4821</span>
+            </div>
+            <div class="ticket-item">
+              <div class="ticket-row">
+                <span class="ticket-subject">API rate limit question</span>
+                <span class="ticket-badge ticket-resolved">Resolved</span>
+              </div>
+              <span class="ticket-date">Closed 5 days ago · Ticket #4797</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  // Init Lucide icons
+  lucide.createIcons();
+
+  // Page navigation
+  const pages = {
+    dashboard: { page: 'page-dashboard', title: 'Dashboard' },
+    analytics:  { page: 'page-analytics',  title: 'Analytics'  },
+    team:       { page: 'page-team',       title: 'Team'       },
+    documents:  { page: 'page-documents',  title: 'Documents'  },
+    integrations:{ page: 'page-integrations', title: 'Integrations' },
+    settings:   { page: 'page-settings',   title: 'Settings'   },
+    help:       { page: 'page-help',       title: 'Help & Support' },
+  };
+
+  function navigate(pageKey) {
+    const def = pages[pageKey];
+    if (!def) return;
+
+    // Update nav items
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.page === pageKey);
+    });
+
+    // Update pages
+    document.querySelectorAll('.page').forEach(el => {
+      el.classList.toggle('active', el.id === def.page);
+    });
+
+    // Update breadcrumb
+    document.getElementById('bc-current').textContent = def.title;
+
+    // Update URL hash
+    history.replaceState(null, '', '#' + pageKey);
+  }
+
+  // Click handler
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      navigate(el.dataset.page);
+    });
+  });
+
+  // Tab pill handler
+  document.querySelectorAll('.tab-pills').forEach(pills => {
+    pills.querySelectorAll('.tab-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.querySelectorAll('.tab-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      });
+    });
+  });
+
+  // Handle initial hash
+  const hash = location.hash.replace('#', '');
+  if (hash && pages[hash]) navigate(hash);
+
+  // Re-init icons after navigation (they're already in DOM)
+</script>
+</body>
+</html>
